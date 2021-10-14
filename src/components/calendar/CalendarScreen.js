@@ -8,6 +8,10 @@ import { messages } from "../../helpers/calendar-messages-es";
 import "moment/locale/es-mx";
 import { CalendarEvent } from "./CalendarEvent";
 import { CalendarModal } from "./CalendarModal";
+import { useDispatch } from "react-redux";
+import { uiOpenModal } from "../../actions/ui";
+import { eventSetActive } from "../../actions/events";
+import { AddNewFab } from "../ui/AddNewFab";
 moment.locale("es");
 
 const localizer = momentLocalizer(moment);
@@ -26,15 +30,16 @@ const events = [
 ];
 
 export const CalendarScreen = () => {
+  const dispatch = useDispatch()
   const [lastView, setLastView] = useState(localStorage.getItem('lastView') || 'month')
 
   const onDoubleClick = (e) => {
-    console.log(e);
+    dispatch(uiOpenModal());
   }
 
   const onSelectEvent = (e) => {
     // console.log('onSelectEvent');
-    console.log(e);
+    dispatch(eventSetActive(e))
   }
 
   const onViewChange = (e) => {
@@ -73,6 +78,7 @@ export const CalendarScreen = () => {
           event: CalendarEvent
         }}
       />
+      <AddNewFab/>
       <CalendarModal />
     </div>
   );
