@@ -5,7 +5,11 @@ import moment from "moment";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
 import { uiCloseModal } from "../../actions/ui";
-import { eventAddNew, eventClearActiveEvent } from "../../actions/events";
+import {
+  eventAddNew,
+  eventClearActiveEvent,
+  eventUpdated,
+} from "../../actions/events";
 
 const customStyles = {
   content: {
@@ -24,31 +28,30 @@ const now = moment().minutes(0).seconds(0).add(1, "hours");
 const end1 = moment().minutes(0).seconds(0).add(2, "hours");
 const initEvent = {
   title: "",
-    notes: "",
-    start: now.toDate(),
-    end: end1.toDate(),
-}
+  notes: "",
+  start: now.toDate(),
+  end: end1.toDate(),
+};
 
 export const CalendarModal = () => {
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
-
-  const {modalOpen} = useSelector(state => state.ui)
-  const {activeEvent} = useSelector(state => state.calendar)
+  const { modalOpen } = useSelector((state) => state.ui);
+  const { activeEvent } = useSelector((state) => state.calendar);
 
   const [dateStart, setDateStart] = useState(now.toDate());
   const [dateEnd, setDateEnd] = useState(end1.toDate());
-  const [titleValid, setTitleValid] = useState(true)
+  const [titleValid, setTitleValid] = useState(true);
 
   const [formValues, setFormValues] = useState(initEvent);
 
   const { notes, title, start, end } = formValues;
 
   useEffect(() => {
-    if(activeEvent){
-      setFormValues(activeEvent)
+    if (activeEvent) {
+      setFormValues(activeEvent);
     }
-  }, [activeEvent, setFormValues])
+  }, [activeEvent, setFormValues]);
 
   const handleInputChange = ({ target }) => {
     setFormValues({
@@ -58,9 +61,9 @@ export const CalendarModal = () => {
   };
 
   const closeModal = () => {
-    dispatch(uiCloseModal())
-    dispatch(eventClearActiveEvent())
-    setFormValues(initEvent)
+    dispatch(uiCloseModal());
+    dispatch(eventClearActiveEvent());
+    setFormValues(initEvent);
   };
 
   const handleStartDateChange = (e) => {
@@ -92,21 +95,27 @@ export const CalendarModal = () => {
       );
     }
 
-    if(title.trim().length < 2){
-      return setTitleValid(false)
+    if (title.trim().length < 2) {
+      return setTitleValid(false);
     }
 
-    dispatch(eventAddNew({
-      ...formValues,
-      id: new Date().getTime(),
-      user: {
-        _id : '1',
-        name: 'Mario'
-      }
-    }))
+    if (activeEvent) {
+      dispatch(eventUpdated(formValues));
+    } else {
+      dispatch(
+        eventAddNew({
+          ...formValues,
+          id: new Date().getTime(),
+          user: {
+            _id: "1",
+            name: "Mario",
+          },
+        })
+      );
+    }
 
     setTitleValid(true);
-    closeModal()
+    closeModal();
   };
 
   return (
@@ -146,7 +155,7 @@ export const CalendarModal = () => {
           <label>Titulo y notas</label>
           <input
             type="text"
-            className={`form-control ${!titleValid && 'is-invalid'}`}
+            className={`form-control ${!titleValid && "is-invalid"}`}
             placeholder="Título del evento"
             name="title"
             autoComplete="off"
