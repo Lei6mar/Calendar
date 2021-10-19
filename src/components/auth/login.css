@@ -1,5 +1,7 @@
+
 .login-container{
-  margin-top: 10vh;
+  padding-top: 10vh;
+  /* height: 90%; */
 }
 .login-form-1{
   border-radius: 5px;
